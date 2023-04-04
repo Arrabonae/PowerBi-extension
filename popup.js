@@ -56,7 +56,7 @@ async function exportAllTransforms() {
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, async (transformObjects) => {
       for (let i = 0; i < transformObjects.length; i++) {
-        // Create a fake event object with the required data
+
         const fakeEvent = {
           target: {
             dataset: {
@@ -65,10 +65,7 @@ async function exportAllTransforms() {
           },
         };
 
-        // Call the onTransformClick function for each transform object
         onTransformClick(fakeEvent);
-
-        // Add a delay between each download (e.g., 1000 ms)
         await delay(1000);
       }
     });
@@ -99,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         transformList.appendChild(button);
       });
-      // Add the "Export all" button
+
       const exportAllButton = document.createElement('a');
       exportAllButton.textContent = 'Export all';
       exportAllButton.className = 'btn waves-effect waves-orange export-all-button';
