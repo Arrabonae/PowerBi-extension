@@ -7,7 +7,10 @@ function onTransformClick(event) {
       const doc = parser.parseFromString(elementData.elementHtml, 'text/html');
       const transformElement = doc.querySelector('transform');
       if (transformElement) {
+        setTimeout(() => {
         chrome.tabs.captureVisibleTab(tabs[0].windowId, { format: 'png' }, (dataUrl) => {
+
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'scaleElement', index: index, scale:parseFloat(document.getElementById("scalingFactor").value)  });
           const img = new Image();
           img.src = dataUrl;
           img.onload = () => {
@@ -23,9 +26,10 @@ function onTransformClick(event) {
               top: elementData.scrollPosition.y + elementData.borderInfo.top + elementData.paddingInfo.top,
             };
             const scalingFactor = parseFloat(document.getElementById("scalingFactor").value);
+            const scale = window.devicePixelRatio;
             canvas.width = rect.width * scalingFactor;
             canvas.height = rect.height * scalingFactor;
-            const scale = window.devicePixelRatio;
+            
             context.drawImage(img, rect.left * scale + margin.left, rect.top * scale + margin.top, rect.width * scale, rect.height * scale, 0, 0, rect.width * scalingFactor, rect.height * scalingFactor);
 
             const croppedDataUrl = canvas.toDataURL('image/png');
@@ -43,12 +47,14 @@ function onTransformClick(event) {
 
           };
         });
+      }, 100);
       } else {
         alert('Failed to download the Transform object as Image');
       }
     });
   });
 }
+
 
 async function exportAllTransforms() {
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -72,7 +78,10 @@ async function exportAllTransforms() {
   });
 }
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
+
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
       const transformList = document.getElementById('transformList');
@@ -95,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         transformList.appendChild(button);
+
+
       });
 
       const exportAllButton = document.createElement('a');

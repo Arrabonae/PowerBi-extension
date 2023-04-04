@@ -28,11 +28,31 @@
       margin-bottom: 5px;
     }
 
-    .transform-button a {
+    .transform-button.btn {
       width: 100%;
-      background-color: #800020;
+      background-color: #800020 !important;
+      color: white !important;
     }
+    .transform-button.btn:hover {
+      background-color: #a00030 !important; /* Lighter color when hovering */
+    }
+    .export-all-button {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+
+    .export-all-button.btn {
+      width: 100%;
+      background-color: black !important;
+      color: white !important;
+    }
+    .export-all-button.btn:hover {
+      background-color: #403c3d !important; /* Lighter color when hovering */
+    }
+
+
   </style>
+  
 </head>
 
 <body>
@@ -41,10 +61,11 @@
     <label for="scalingFactor">Scaling Factor:</label>
     <select name="scalingFactor" id="scalingFactor" style="display: inline-block;">
       <option value="1">1x</option>
-      <option value="2">2x</option>
+      <option value="2" selected>2x</option>
       <option value="3">3x</option>
       <option value="4">4x</option>
       <option value="5">5x</option>
+      <option value="10">10x</option>
       <!-- Add more options if needed -->
     </select>
   </div>

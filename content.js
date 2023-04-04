@@ -71,6 +71,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse(getTransformElement(request.index));
   } else if (request.action === 'findTransformObjects') {
     sendResponse(findTransformObjects());
-
+  } else if (request.action === 'scaleElement') {
+    const element = document.getElementById(request.index);
+    element.style.transform = `scale(${request.scale})`;
+    element.style.transformOrigin = 'top left';
   }
 });
