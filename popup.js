@@ -1,4 +1,3 @@
-
 function onTransformClick(event) {
   const index = event.target.dataset.index;
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -8,57 +7,54 @@ function onTransformClick(event) {
       const transformElement = doc.querySelector('transform');
       if (transformElement) {
         setTimeout(() => {
-        chrome.tabs.captureVisibleTab(tabs[0].windowId, { format: 'png' }, (dataUrl) => {
+          chrome.tabs.captureVisibleTab(tabs[0].windowId, { format: 'png' }, (dataUrl) => {
+            chrome.tabs.getZoom(tabs[0].id, (zoomFactor) => {
+              chrome.tabs.sendMessage(tabs[0].id, { action: 'scaleElement', index: index, scale: parseFloat(document.getElementById("scalingFactor").value) });
+              const img = new Image();
+              img.src = dataUrl;
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
 
-          chrome.tabs.sendMessage(tabs[0].id, { action: 'scaleElement', index: index, scale:parseFloat(document.getElementById("scalingFactor").value)  });
-          const img = new Image();
-          img.src = dataUrl;
-          img.onload = () => {
+                const rect = elementData.boundingClientRect;
 
+                const margin = {
+                  left: elementData.scrollPosition.x + elementData.borderInfo.left + elementData.paddingInfo.left,
+                  top: elementData.scrollPosition.y + elementData.borderInfo.top + elementData.paddingInfo.top,
+                };
+                const scalingFactor = parseFloat(document.getElementById("scalingFactor").value);
+                const scale = window.devicePixelRatio * zoomFactor;
+                canvas.width = rect.width * scalingFactor;
+                canvas.height = rect.height * scalingFactor;
 
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
+                context.drawImage(img, (rect.left + margin.left) * scale, (rect.top + margin.top) * scale, rect.width * scale, rect.height * scale, 0, 0, rect.width * scalingFactor, rect.height * scalingFactor);
 
-            const rect = elementData.boundingClientRect;
+                const croppedDataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = croppedDataUrl;
+                const ariaLabel = transformElement.querySelector('.visualContainer').getAttribute('aria-label');
+                const ariaDescription = transformElement.querySelector('.visualContainer').getAttribute('aria-roledescription');
 
-            const margin = {
-              left: elementData.scrollPosition.x + elementData.borderInfo.left + elementData.paddingInfo.left,
-              top: elementData.scrollPosition.y + elementData.borderInfo.top + elementData.paddingInfo.top,
-            };
-            const scalingFactor = parseFloat(document.getElementById("scalingFactor").value);
-            const scale = window.devicePixelRatio;
-            canvas.width = rect.width * scalingFactor;
-            canvas.height = rect.height * scalingFactor;
-            
-            context.drawImage(img, (rect.left + margin.left) * scale, (rect.top + margin.top) * scale, rect.width * scale, rect.height * scale, 0, 0, rect.width * scalingFactor, rect.height * scalingFactor);
+                if (ariaLabel != null) {
+                  link.download = `${ariaLabel}.png`;
+                } else if (ariaDescription != null) {
+                  link.download = `${ariaDescription}_${index}.png`;
+                } else {
+                  link.download = `Element_${index}.png`;
+                }
 
-            const croppedDataUrl = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.href = croppedDataUrl;
-            const ariaLabel = transformElement.querySelector('.visualContainer').getAttribute('aria-label');
-            const ariaDescription = transformElement.querySelector('.visualContainer').getAttribute('aria-roledescription');
-
-            if (ariaLabel != null) {
-              link.download = `${ariaLabel}.png`;
-              
-            } else if (ariaDescription != null) {
-              link.download = `${ariaDescription}_${index}.png`;
-            } else {
-              link.download = `Element_${index}.png`;
-            }
-
-            link.click();
-
-          };
-        });
-      }, 100);
+                link.click();
+              };
+            });
+          });
+        }, 100);
       } else {
         alert('Failed to download the Transform object as Image');
       }
     });
   });
-  
 }
+
 
 
 async function exportAllTransforms() {
