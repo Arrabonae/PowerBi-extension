@@ -4,10 +4,30 @@ function findTransformObjects() {
   return transformObjects.map((el, index) => {
     const visualContainer = el.querySelector('.visualContainer');
     const ariaLabel = visualContainer ? visualContainer.getAttribute('aria-label') : '';
+    const ariaDescription = visualContainer ? visualContainer.getAttribute('aria-roledescription') : '';
     return {
       id: index,
       transform: el,
-      ariaLabel: ariaLabel
+      ariaLabel: ariaLabel,
+      ariaDescription: ariaDescription,
+      width: el.getAttribute('style').split('width: ')[1].split('px')[0],
+      height: el.getAttribute('style').split('height: ')[1].split('px')[0]
+    };
+  });
+}
+
+
+function findTransformGroups() {
+  const transformGroups = Array.from(document.getElementsByTagName('transform'));
+  return transformGroups.map((el, index) => {
+    const visualContainer = el.querySelector('.visualContainerGroup');
+    const ariaLabel = visualContainer ? visualContainer.getAttribute('aria-label') : '';
+    return {
+      id: index,
+      transform: el,
+      ariaLabel: ariaLabel,
+      width: el.getAttribute('style').split('width: ')[1].split('px')[0],
+      height: el.getAttribute('style').split('height: ')[1].split('px')[0]
     };
   });
 }
@@ -63,6 +83,8 @@ function getComputedStyleProperty(element, property) {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getTransformObjects') {
     sendResponse(findTransformObjects());
+  } else if (request.action === 'getTransformGroups') {
+    sendResponse(findTransformGroups());
   } else if (request.action === 'highlightTransform') {
     highlightTransform(request.index);
   } else if (request.action === 'unhighlightTransform') {
