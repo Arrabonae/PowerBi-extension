@@ -120,6 +120,32 @@ function addTransformGroups(transformGroups) {
   });
 }
 
+/**
+ * highlightValidTransforms - Highlights all valid transform objects on the page
+ * for a given duration (in milliseconds). A valid transform object is one that
+ * meets the size threshold defined by the user.
+ *
+ * @param {Array} transformObjects - An array of transform objects to check for validity.
+ * @param {number} sizeThreshold - The size threshold for a transform object to be considered valid.
+ * @param {number} duration - The duration (in milliseconds) for which the valid transform objects should be highlighted.
+ */
+function highlightValidTransforms(transformObjects) {
+  const sizeThreshold = parseInt(document.getElementById('sizeThreshold').value, 10);
+  const validTransformObjects = transformObjects.filter((obj) => obj.width >= sizeThreshold && obj.height >= sizeThreshold);
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    validTransformObjects.forEach((obj) => {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightTransform', index: obj.id });
+    });
+
+    setTimeout(() => {
+      validTransformObjects.forEach((obj) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'unhighlightTransform', index: obj.id });
+      });
+    }, 500);
+  });
+}
+
 /*
  * Adds transform objects to the list in the popup.
  * Iterates through each transformObject and creates a button with the appropriate event listeners and styling.
@@ -141,14 +167,14 @@ function addTransformObjects(transformObjects) {
 
     button.addEventListener('mouseover', () => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightTransform', index: obj.id });
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightTransform', index: obj.id });
+      });
     });
-  });
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    button.addEventListener('mouseout', () => {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'unhighlightTransform', index: obj.id });
+      button.addEventListener('mouseout', () => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'unhighlightTransform', index: obj.id });
+      });
     });
-  });
     transformList.appendChild(button);
   });
   if (hasValidTransforms) {
@@ -158,38 +184,32 @@ function addTransformObjects(transformObjects) {
     exportAllButton.addEventListener('click', exportAllTransforms);
     transformList.appendChild(exportAllButton);
   }
-
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
-
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-
-
     chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
       addTransformObjects(transformObjects);
     });
-
   });
 
+  const sizeThresholdInput = document.getElementById('sizeThreshold');
+  const sizeThresholdValue = document.getElementById('sizeThresholdValue');
 
-    const sizeThresholdInput = document.getElementById('sizeThreshold');
-    const sizeThresholdValue = document.getElementById('sizeThresholdValue');
+  sizeThresholdInput.addEventListener('input', () => {
+    sizeThresholdValue.textContent = sizeThresholdInput.value;
+  });
+  sizeThresholdInput.addEventListener('change', () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
+        const transformList = document.getElementById('transformList');
 
-    sizeThresholdInput.addEventListener('input', () => {
-      sizeThresholdValue.textContent = sizeThresholdInput.value;
-    });
-    sizeThresholdInput.addEventListener('change', () => {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
-          const transformList = document.getElementById('transformList');
-
-          while (transformList.firstChild) {
-            transformList.firstChild.remove();
-          }
-          addTransformObjects(transformObjects);
-        });
+        while (transformList.firstChild) {
+          transformList.firstChild.remove();
+        }
+        addTransformObjects(transformObjects);
+        highlightValidTransforms(transformObjects);
       });
     });
+  });
 });
