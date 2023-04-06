@@ -5,9 +5,9 @@ This Chrome extension allows you to export `.visualContainer` and `.visualContai
 ## Features
 
 - List and export `.visualContainer` elements individually
-- List and export `.visualContainerGroup` elements individually
 - Export all visible `.visualContainer` elements at once
 - Customize the scaling factor for the exported images
+- Customize the the size of Graph to be offered for export
 - Highlight the selected element on the PowerBi report
 
 ## Installation
