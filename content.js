@@ -1,4 +1,8 @@
 
+/**
+ * Finds and returns an array of transform objects present on the page.
+ * @returns {Array} An array of transform object information including id, element, ariaLabel, ariaDescription, width, and height.
+ */
 function findTransformObjects() {
   const transformObjects = Array.from(document.getElementsByTagName('transform'));
   return transformObjects.map((el, index) => {
@@ -16,7 +20,10 @@ function findTransformObjects() {
   });
 }
 
-
+/**
+ * Finds and returns an array of transform groups present on the page.
+ * @returns {Array} An array of transform group information including id, element, ariaLabel, width, and height.
+ */
 function findTransformGroups() {
   const transformGroups = Array.from(document.getElementsByTagName('transform'));
   return transformGroups.map((el, index) => {
@@ -32,6 +39,10 @@ function findTransformGroups() {
   });
 }
 
+/**
+ * Highlights the transform object with the specified index by adding a box shadow.
+ * @param {number} index - The index of the transform object to highlight.
+ */
 function highlightTransform(index) {
   const transformObject = document.getElementsByTagName('transform')[index];
   if (transformObject) {
@@ -39,6 +50,10 @@ function highlightTransform(index) {
   }
 }
 
+/**
+ * Removes the highlight from the transform object with the specified index by removing the box shadow.
+ * @param {number} index - The index of the transform object to unhighlight.
+ */
 function unhighlightTransform(index) {
   const transformObject = document.getElementsByTagName('transform')[index];
   if (transformObject) {
@@ -46,6 +61,11 @@ function unhighlightTransform(index) {
   }
 }
 
+/**
+ * Retrieves and returns the transform element with the specified index along with its relevant properties.
+ * @param {number} index - The index of the transform element to retrieve.
+ * @returns {Object|null} An object containing elementHtml, boundingClientRect, scrollPosition, borderInfo, and paddingInfo, or null if the element is not found.
+ */
 function getTransformElement(index) {
   const transformObject = document.getElementsByTagName('transform')[index];
 
@@ -76,10 +96,17 @@ function getTransformElement(index) {
   }
 }
 
+/**
+ * Gets and returns the computed style property value for the specified element and property.
+ * @param {HTMLElement} element - The HTML element to get the computed style property from.
+ * @param {string} property - The name of the CSS property to get the value for.
+ * @returns {number} The numeric value of the specified property.
+ */
 function getComputedStyleProperty(element, property) {
   return parseFloat(window.getComputedStyle(element)[property]);
 }
 
+// Message listener for handling requests from the popup.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getTransformObjects') {
     sendResponse(findTransformObjects());
