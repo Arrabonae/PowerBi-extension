@@ -142,7 +142,7 @@ function highlightValidTransforms(transformObjects) {
       validTransformObjects.forEach((obj) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'unhighlightTransform', index: obj.id });
       });
-    }, 500);
+    }, 750);
   });
 }
 
