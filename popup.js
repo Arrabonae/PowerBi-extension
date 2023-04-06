@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   });
 
-    // Update the transform objects when sizeThreshold input changes
+
     const sizeThresholdInput = document.getElementById('sizeThreshold');
     const sizeThresholdValue = document.getElementById('sizeThresholdValue');
 
@@ -184,11 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
           const transformList = document.getElementById('transformList');
-          // Remove existing transform buttons
+
           while (transformList.firstChild) {
             transformList.firstChild.remove();
           }
-          // Add updated transform buttons
           addTransformObjects(transformObjects);
         });
       });
