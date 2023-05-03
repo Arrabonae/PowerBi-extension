@@ -9,7 +9,7 @@
     body {
       width: 300px;
       height: 400px;
-      font-family: Arial, sans-serif;
+      font-family: Helvetica;
       text-align: center;
       padding: 10px;
     }
@@ -17,12 +17,14 @@
     h1 {
       font-size: 150%;
       margin-bottom: 5px;
+      color: #111111 !important;
+      font-weight: bold;
     }
 
     .subtext {
-      font-size: 90%;
+      font-size: 95%;
       font-weight: normal;
-      color: #777;
+      color: #8C8C8C;
       margin-bottom: 10px;
     }
 
@@ -39,30 +41,30 @@
     }
 
     .transform-button.btn {
-      background-color: #800020 !important;
-      color: white !important;
+      background-color: #D04A02 !important;
+      color: #FFFFFF !important;
     }
 
     .transform-button.btn:hover {
-      background-color: #a00030 !important;
+      background-color: #FEDACC !important;
     }
 
     .transformGroup-button.btn {
-      background-color: #d04a02 !important;
-      color: white !important;
+      background-color: #D93954 !important;
+      color: #FFFFFF !important;
     }
 
     .transformGroup-button.btn:hover {
-      background-color: #d96e35 !important;
+      background-color: #F8DDE1 !important;
     }
 
     .export-all-button.btn {
-      background-color: black !important;
-      color: white !important;
+      background-color: #415385 !important;
+      color: #FFFFFF !important;
     }
 
     .export-all-button.btn:hover {
-      background-color: #403c3d !important;
+      background-color: #D2D7E2 !important;
     }
 
     .dropdown-container {
@@ -72,8 +74,7 @@
     .dropdown label {
       display: block;
       font-size: 14px;
-      color: #9e9e9e;
-      font-weight: bold;
+      color: #111111;
     }
 
     .dropdown select {
@@ -81,11 +82,11 @@
       width: 100%;
       height: 36px;
       padding: 0 10px;
-      background-color: #e0e0e0;
+      background-color: #F1BAC3;
       border: none;
       border-radius: 4px;
       font-size: 14px;
-      color: #424242;
+      color: #462B2F;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
@@ -108,7 +109,7 @@
       height: 16px;
       width: 16px;
       border-radius: 50%;
-      background: #800020;
+      background: #F1BAC3;
       cursor: pointer;
     }
 
@@ -116,6 +117,12 @@
 </head>
 
 <body>
+
+  <div id="unsupportedMessage" class="unsupported-message"> 
+    <h1>Unsupported Website</h1>
+    <p class="subtext">This website is not supported by this extension.</p>
+  </div>
+  <div id="mainContent">
   <h1>Select a Graph</h1>
   <p class="subtext">Click the button to download the Graph</p>
   <div class="dropdown">
@@ -135,8 +142,10 @@
       <span id="sizeThresholdValue">60</span>
     </div>
   <div id="transformList"></div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="popup.js"></script>
+
 </body>
 
 </html>

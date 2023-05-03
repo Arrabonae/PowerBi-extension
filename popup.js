@@ -188,28 +188,45 @@ function addTransformObjects(transformObjects) {
 
 document.addEventListener('DOMContentLoaded', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
-      addTransformObjects(transformObjects);
-    });
-  });
+    const currentTab = tabs[0];
+    const powerbiPattern = /https?:\/\/app\.powerbi\.com\//i;
 
-  const sizeThresholdInput = document.getElementById('sizeThreshold');
-  const sizeThresholdValue = document.getElementById('sizeThresholdValue');
+    const unsupportedMessage = document.getElementById('unsupportedMessage');
+    const mainContent = Array.from(document.querySelectorAll('body > :not(#unsupportedMessage)'));
 
-  sizeThresholdInput.addEventListener('input', () => {
-    sizeThresholdValue.textContent = sizeThresholdInput.value;
-  });
-  sizeThresholdInput.addEventListener('change', () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!powerbiPattern.test(currentTab.url)) {
+      // Show unsupported message
+      unsupportedMessage.style.display = 'block';
+      mainContent.forEach(element => element.style.display = 'none');
+    } else {
+      // Show main content
+      unsupportedMessage.style.display = 'none';
+      mainContent.forEach(element => element.style.display = 'block');
+
+      // Add your original DOMContentLoaded code here
       chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
-        const transformList = document.getElementById('transformList');
-
-        while (transformList.firstChild) {
-          transformList.firstChild.remove();
-        }
         addTransformObjects(transformObjects);
-        highlightValidTransforms(transformObjects);
       });
-    });
+
+      const sizeThresholdInput = document.getElementById('sizeThreshold');
+      const sizeThresholdValue = document.getElementById('sizeThresholdValue');
+
+      sizeThresholdInput.addEventListener('input', () => {
+        sizeThresholdValue.textContent = sizeThresholdInput.value;
+      });
+      sizeThresholdInput.addEventListener('change', () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'getTransformObjects' }, (transformObjects) => {
+            const transformList = document.getElementById('transformList');
+
+            while (transformList.firstChild) {
+              transformList.firstChild.remove();
+            }
+            addTransformObjects(transformObjects);
+            highlightValidTransforms(transformObjects);
+          });
+        });
+      });
+    }
   });
 });

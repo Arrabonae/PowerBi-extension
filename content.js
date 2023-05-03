@@ -46,7 +46,7 @@ function findTransformGroups() {
 function highlightTransform(index) {
   const transformObject = document.getElementsByTagName('transform')[index];
   if (transformObject) {
-    transformObject.style.boxShadow = '0 0 10px #800020';
+    transformObject.style.boxShadow = '0 0 10px #D04A02';
   }
 }
 
